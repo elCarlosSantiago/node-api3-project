@@ -54,8 +54,9 @@ router.put('/:id', validateUser, validateUserId, async (req, res, next) => {
   const { id } = req.params;
   const changes = req.body;
   try {
-    const updatedUser = await Users.update(id, changes);
-    res.status(200).json({ message: 'Changes were made', count: updatedUser });
+    await Users.update(id, changes);
+    const updatedUser = await Users.getById(id);
+    res.status(200).json(updatedUser);
   } catch (err) {
     next(err);
   }
@@ -66,10 +67,9 @@ router.delete('/:id', validateUserId, async (req, res, next) => {
   // this needs a middleware to verify user id
   const { id } = req.params;
   try {
-    const deletedUser = await Users.remove(id);
-    res
-      .status(200)
-      .json({ message: 'User deleted successfully', count: deletedUser });
+    const deletedUser = await Users.getById(id);
+    await Users.remove(id);
+    res.status(200).json(deletedUser);
   } catch (err) {
     next(err);
   }
